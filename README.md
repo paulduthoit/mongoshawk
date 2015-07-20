@@ -124,7 +124,7 @@ myModelInstance.list({}, { field_i_want : 1 }, function(err, datas) {
 });
 ```
 
-You can also `show`, `create`, `update`, `delete`, etc. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/queries).
+You can also `show`, `create`, `update`, `remove`, etc. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/queries).
 
 ### Linking Models together
 
