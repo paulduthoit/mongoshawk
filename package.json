@@ -1,7 +1,7 @@
 {
   "name": "mongoshawk",
   "description": "Mongoshawk - MongoDB ODM",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "author": "Paul Duthoit <duthoit.paul@gmail.com>",
   "homepage": "http://mongoshawk.com/",
   "keywords": ["mongodb", "document", "model", "schema", "database", "odm", "data", "datastore", "query", "nosql", "orm", "db"],
