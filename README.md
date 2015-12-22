@@ -156,7 +156,7 @@ var AnotherModel = Mongoshawk.getModel('AnotherModelName');
 // Set reference function
 var refFunction = function(filter, fields, options, callback) {
     var anotherModelInstance = new AnotherModel();
-    filter = { '$and': [ { a_field: 'a value' }, filter ] }
+    filter = { '$and': [ { a_field: 'a value' }, filter ] };
     anOtherModelInstance.list(filter, fields, options, callback);
 };
 
