@@ -24,30 +24,31 @@ $ npm install mongoshawk
 
 ## Stability
 
-The current stable branch is [master](https://github.com/paulduthoit/mongoshawk/tree/master). More updates will be added for the 0.2.x release series.
+The current stable branch is [master](https://github.com/paulduthoit/mongoshawk/tree/master). More updates will be added for the 0.3.x release series.
 
 ## Overview
 
 ### Connecting to MongoDB
 
-First, we need to define a connection. Your app can use one or more databases. Use `Mongoshawk.createConnection`. `createConnection` take the parameters `connectionName, databaseName, databaseHost, databasePort, databaseOption, callback`.
+First, we need to define a connection. Your app can use one or more databases. Use `Mongoshawk.createConnection`. `createConnection` take the parameters `connectionName, databaseName, databaseServerConfig, databaseOption, callback`.
 
 ```js
-var Mongoshawk      = require('mongoshawk');
-var connectionName  = "main";
-var databaseName    = "my_database";
-var databaseHost    = "127.0.0.1";
-var databasePort    = "27017";
-var databaseOption  = {};
+var Mongoshawk = require('mongoshawk');
+var connectionName = "main";
+var databaseName = "my_database";
+var databaseServerConfig = {
+    host: "127.0.0.1",
+    port: "27017"
+};
+var databaseOption = {};
 
 
 // Create connection
-Mongoshawk.createConnection(connectionName, databaseName, { host: databaseHost, port: databasePort }, databaseOption, function(err, connection) {
+Mongoshawk.createConnection(connectionName, databaseName, databaseServerConfig, databaseOption, function(err, connection) {
 
   // If error
   if(err) {
-    throw "Error : " + err.message;
-    return;
+    throw err;
   }
 
   console.log('Connection to database is established' + '\r');
@@ -62,37 +63,37 @@ Once connected, the `callback` function is trigged with the parameters `err, con
 Models are defined through the `Mongoshawk` interface with the `Schema` interface. 
 
 ```js
-var Mongoshawk          = require('mongoshawk');
-var Schema              = Mongoshawk.Schema;
-var modelName           = "User";
-var databaseConnection  = Mongoshawk.getConnection("main");
-var collectionName      = "user";
-var schema              = new Schema({
-    name    : String,
-    email   : String,
-    date    : Date
+var Mongoshawk = require('mongoshawk');
+var Schema = Mongoshawk.Schema;
+var modelName = "User";
+var databaseConnection = Mongoshawk.getConnection("main");
+var collectionName = "user";
+var schema = new Schema({
+    name  : String,
+    email : String,
+    date  : Date
 });
 
 // Add model
 Mongoshawk.addModel(modelName, databaseConnection, collectionName, schema);
 ```
 
-You can catch more informations about how to structure your model schema on the [Mongoshawk Documentation](http://mongoshawk.com/docs/schema).
+You can catch more informations about how to structure your model schema on the [Mongoshawk Documentation](http://mongoshawk.com/docs/schema) (available soon).
 
 The following example shows some of these features:
 
 ```js
-var Mongoshawk      = require('mongoshawk');
-var Schema          = Mongoshawk.Schema;
-var ValidationRule  = Mongoshawk.ValidationRule;
+var Mongoshawk = require('mongoshawk');
+var Schema = Mongoshawk.Schema;
+var ValidationRule = Mongoshawk.ValidationRule;
 
 // Set schema
 var schema = new Schema({
-    name        : { type : String, required : "create" },
-    email       : { type : String, validation: new ValidationRule("email") },
-    contacts    : [ { type : Schema.Types.ObjectId } ],
-    date        : { type : Date, default : Date.now, required : true }
-}, { allowUndefinedFields : false });
+    name     : { type: String, required: "create" },
+    email    : { type: String, validation: new ValidationRule("email") },
+    contacts : [ { type: Schema.Types.ObjectId } ],
+    date     : { type: Date, default: Date.now, required: true }
+}, { allowUndefinedFields: false });
 ```
 
 ### Accessing a Model
@@ -100,9 +101,9 @@ var schema = new Schema({
 Once we define a model through `Mongoshawk.addModel`, we can access it through functions `Mongoshawk.getModels` and `Mongoshawk.getModel`.
 
 ```js
-var Mongoshawk      = require('mongoshawk');
-var allMyModel      = Mongoshawk.getModels();
-var oneOfMyModel    = Mongoshawk.getModel('MyModelName');
+var Mongoshawk = require('mongoshawk');
+var allMyModel = Mongoshawk.getModels();
+var oneOfMyModel = Mongoshawk.getModel('MyModelName');
 ```
 
 Or just do it all at once
@@ -114,17 +115,17 @@ var MyModel = Mongoshawk.addModel('ModelName', myDatabaseConnection, 'myCollecti
 We can then instantiate it, and list documents from the collection:
 
 ```js
-var Mongoshawk        = require('mongoshawk');
-var MyModel           = Mongoshawk.getModel('MyModelName');
-var myModelInstance   = new MyModel();
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var myModelInstance = new MyModel();
 
 // List documents
-myModelInstance.list({}, { field_i_want : 1 }, function(err, datas) {
+myModelInstance.list({}, { field_i_want: 1 }, function(err, datas) {
   // ...
 });
 ```
 
-You can also `show`, `create`, `update`, `remove`, etc. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/queries).
+You can also `show`, `create`, `update`, `remove`, etc. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/queries) (available soon).
 
 ### Linking Models together
 
@@ -137,9 +138,9 @@ The `references` allow you to retrieve edge objects defined in a `Schema.Types.O
 First, we need to define the `reference`. Use `Model.addReference`. `Model.addReference` take the parameters `fieldPath, reference`.
 
 ```js
-var Mongoshawk    = require('mongoshawk');
-var MyModel       = Mongoshawk.getModel('MyModelName');
-var AnotherModel  = Mongoshawk.getModel('AnotherModelName');
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var AnotherModel = Mongoshawk.getModel('AnotherModelName');
 
 // Add reference
 myModel.addReference('field_path', AnotherModel);
@@ -148,14 +149,14 @@ myModel.addReference('field_path', AnotherModel);
 The `reference` parameter of the `Model.addReference` can also be a function.
 
 ```js
-var Mongoshawk    = require('mongoshawk');
-var MyModel       = Mongoshawk.getModel('MyModelName');
-var AnotherModel  = Mongoshawk.getModel('AnotherModelName');
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var AnotherModel = Mongoshawk.getModel('AnotherModelName');
 
 // Set reference function
 var refFunction = function(filter, fields, options, callback) {
     var anotherModelInstance = new AnotherModel();
-    filter = { '$and' : [ { 'field' : 'a value' }, filter ] }
+    filter = { '$and': [ { a_field: 'a value' }, filter ] }
     anOtherModelInstance.list(filter, fields, options, callback);
 };
 
@@ -163,35 +164,35 @@ var refFunction = function(filter, fields, options, callback) {
 myModel.addReference('field_path', refFunction);
 ```
 
-You can also define reference of multiple `Models` or functions. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/relations).
+You can also define reference of multiple `Models` or functions. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/relations) (available soon).
 
 Once the reference defined, we can retrieve documents with its edge documents:
 
 ```js
-var Mongoshawk        = require('mongoshawk');
-var MyModel           = Mongoshawk.getModel('MyModelName');
-var myModelInstance   = new MyModel();
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var myModelInstance = new MyModel();
 
-// Show a document without edges
-myModelInstance.show(anId, { field_i_want : 1, edge_field_i_want : 1 }, function(err, datas) {
+// Show a document without populate edges
+myModelInstance.show(anId, { field_i_want: 1, edge_i_want: 1 }, function(err, datas) {
   
  /* datas = {
-        _id : '1a',
-        field_i_want : 'a value',
-        edge_field_i_want : '2b'
+        _id: '1a',
+        field_i_want: 'a value',
+        edge_i_want: '2b'
     } */
 
 });
 
-// Show a document with edges
-myModelInstance.show(anId, { field_i_want : 1, edge_field_i_want : { '$fields' : { field_i_want : 1 } } }, function(err, datas) {
+// Show a document with populated edges
+myModelInstance.show(anId, { field_i_want: 1, edge_i_want: { '$fields': { field_i_want: 1 } } }, function(err, datas) {
   
  /* datas = {
-        _id : '1a',
-        field_i_want : 'a value',
-        edge_field_i_want : {
-            _id : '2b',
-            field_i_want : 'another value'
+        _id: '1a',
+        field_i_want: 'a value',
+        edge_i_want: {
+            _id: '2b',
+            field_i_want: 'another value'
         }
     } */
 
@@ -205,9 +206,9 @@ The `relationships` allow you to retrieve edge objects referenced in another `Mo
 First, we need to define the `relationship`. Use `Model.addRelationship`. `Model.addRelationship` take the parameters `fieldPath, relationship`.
 
 ```js
-var Mongoshawk    = require('mongoshawk');
-var MyModel       = Mongoshawk.getModel('MyModelName');
-var AnotherModel  = Mongoshawk.getModel('AnotherModelName');
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var AnotherModel = Mongoshawk.getModel('AnotherModelName');
 
 // Add relationship
 myModel.addRelationship('field_path', { ref: AnotherModel, refPath: 'relationship_field_path' });
@@ -216,14 +217,14 @@ myModel.addRelationship('field_path', { ref: AnotherModel, refPath: 'relationshi
 The `relationship.ref` parameter of the `Model.addRelationship` can also be a function.
 
 ```js
-var Mongoshawk    = require('mongoshawk');
-var MyModel       = Mongoshawk.getModel('MyModelName');
-var AnotherModel  = Mongoshawk.getModel('AnotherModelName');
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var AnotherModel = Mongoshawk.getModel('AnotherModelName');
 
 // Set relationship function
 var relFunction = function(filter, fields, options, callback) {
     var anotherModelInstance = new AnotherModel();
-    filter = { '$and' : [ { 'field' : 'a value' }, filter ] }
+    filter = { '$and': [ { a_field: 'a value' }, filter ] }
     anOtherModelInstance.list(filter, fields, options, callback);
 };
 
@@ -231,24 +232,24 @@ var relFunction = function(filter, fields, options, callback) {
 myModel.addRelationship('field_path', { ref: relFunction, refPath: 'relationship_field_path' });
 ```
 
-You can also define relationship by providing a `condition` in place of a `refPath`. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/relations).
+You can also define relationship by providing a `condition` in place of a `refPath`. For more details, check out the [Mongoshawk Documentation](http://mongoshawk.com/docs/relations) (available soon).
 
 Once the relationship defined, we can retrieve documents with its edge documents:
 
 ```js
-var Mongoshawk        = require('mongoshawk');
-var MyModel           = Mongoshawk.getModel('MyModelName');
-var myModelInstance   = new MyModel();
+var Mongoshawk = require('mongoshawk');
+var MyModel = Mongoshawk.getModel('MyModelName');
+var myModelInstance = new MyModel();
 
-// Show a document with edges
-myModelInstance.show(anId, { field_i_want : 1, edge_field_i_want : { '$fields' : { field_i_want : 1 } } }, function(err, datas) {
+// Show a document with populated edges
+myModelInstance.show(anId, { field_i_want: 1, edges_i_want: { '$fields': { field_i_want: 1 } } }, function(err, datas) {
   
  /* datas = {
-        _id : '1a',
-        field_i_want : 'a value',
-        edge_field_i_want : [ {
-            _id : '2b',
-            field_i_want : 'another value'
+        _id: '1a',
+        field_i_want: 'a value',
+        edges_i_want: [ {
+            _id: '2b',
+            field_i_want: 'another value'
         } ]
     } */
 
@@ -261,7 +262,7 @@ The driver being used defaults to [node-mongodb-native](https://github.com/mongo
 
 ## API Docs
 
-Find the API docs [here](http://mongoshawk.com/docs/api).
+Find the API docs [here](http://mongoshawk.com/docs/api) (available soon).
 
 ## License
 
