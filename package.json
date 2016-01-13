@@ -1,19 +1,34 @@
 {
   "name": "mongoshawk",
   "description": "Mongoshawk - MongoDB ODM",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "author": "Paul Duthoit <duthoit.paul@gmail.com>",
   "homepage": "http://mongoshawk.com/",
-  "keywords": ["mongodb", "document", "model", "schema", "database", "odm", "data", "datastore", "query", "nosql", "orm", "db"],
+  "keywords": [
+    "mongodb",
+    "document",
+    "model",
+    "schema",
+    "database",
+    "odm",
+    "data",
+    "datastore",
+    "query",
+    "nosql",
+    "orm",
+    "db"
+  ],
   "license": "MIT",
   "dependencies": {
-    "mongodb": "2.0.x",
-    "underscore": "1.6.x",
     "async": "0.9.x",
     "deepmerge": "0.2.x",
-    "mpath": "0.2.x"
+    "mongodb": "2.0.x",
+    "mpath": "0.2.x",
+    "underscore": "1.6.x"
   },
-  "directories": { "lib": "./lib/mongoshawk" },
+  "directories": {
+    "lib": "./lib/mongoshawk"
+  },
   "bugs": {
     "url": "https://github.com/paulduthoit/mongoshawk/issues/new",
     "email": "duthoit.paul@gmail.com"
